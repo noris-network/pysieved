@@ -1,20 +1,20 @@
-#! /usr/bin/python
+# 22 January 2025 - Modified by F. Ioannidis.
 
-import __init__
-import re
 import os
+import re
 
-path_re = re.compile(r'%((\d+)(\.\d+)?)?([ud%])')
+import plugins
 
-class new(__init__.new):
+path_re = re.compile(r"%((\d+)(\.\d+)?)?([ud%])")
+
+
+class PysievedPlugin(plugins.PysievedPlugin):
     def init(self, config):
-        self.uid = config.getint('Virtual', 'uid', None)
-        self.gid = config.getint('Virtual', 'gid', None)
-        self.defaultdomain = config.get('Virtual', 'defaultdomain', 'none')
-        self.path = config.get('Virtual', 'path', None)
-        assert ((self.uid is not None) and
-                (self.gid is not None) and
-                self.path)
+        self.uid = config.getint("Virtual", "uid", None)
+        self.gid = config.getint("Virtual", "gid", None)
+        self.defaultdomain = config.get("Virtual", "defaultdomain", "none")
+        self.path = config.get("Virtual", "path", None)
+        assert (self.uid is not None) and (self.gid is not None) and self.path
 
     def lookup(self, params):
         if self.gid >= 0:
@@ -23,35 +23,40 @@ class new(__init__.new):
             os.setuid(self.uid)
 
         try:
-            user, domain = params['username'].split('@', 1)
+            user, domain = params["username"].split("@", 1)
         except ValueError:
-            user, domain = params['username'], self.defaultdomain
+            user, domain = params["username"], self.defaultdomain
 
         def repl(m):
             l = m.group(2)
             r = m.group(3)
             c = m.group(4)
-            if c == '%':
-                return '%'
-            elif c == 'u':
+            if c == "%":
+                return "%"
+            elif c == "u":
                 s = user
-            elif c == 'd':
+            elif c == "d":
                 s = domain
             if l:
                 l = int(l)
                 if r:
                     r = int(r[1:])
-                    return s[l:l+r]
+                    return s[l : l + r]
                 else:
                     return s[:l]
             else:
                 return s
+
         username = path_re.sub(repl, self.path)
         return username
 
-if __name__ == '__main__':
-    c = __init__.TestConfig(uid=-1, gid=-1,
-                            defaultdomain="woozle.snerk",
-                            path='/shared/spool/active/%d/%0.1u/%1.1u/%u/sieve/')
-    n = new(None, c)
-    print n.lookup({'username': 'neale@woozle.org'})
+
+if __name__ == "__main__":
+    c = plugins.TestConfig(
+        uid=-1,
+        gid=-1,
+        defaultdomain="woozle.snerk",
+        path="/shared/spool/active/%d/%0.1u/%1.1u/%u/sieve/",
+    )
+    n = PysievedPlugin(None, c)
+    print(n.lookup({"username": "neale@woozle.org"}))

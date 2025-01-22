@@ -28,8 +28,8 @@ import socketserver as SocketServer
 import sys
 import syslog
 
-from .config import Config
-from .managesieve import RequestHandler
+from config import Config
+from managesieve import RequestHandler
 
 try:
     from tlslite.api import *
@@ -302,7 +302,7 @@ def main():
         sock = socket.fromfd(0, socket.AF_INET, socket.SOCK_STREAM)
         h = handler(sock, sock.getpeername(), None)
     else:
-        from pysieved import daemon
+        import daemon
 
         s = Server((addr, port), handler)
 

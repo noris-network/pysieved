@@ -17,11 +17,17 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
+#
+# 22 January 2025 - Modified by F. Ioannidis.
+
+
+import base64
+
 
 class PysievedPlugin:
     # Override this
-    capabilities = 'fileinto reject'
-    mechs = [ 'PLAIN' ]
+    capabilities = "fileinto reject"
+    mechs = ["PLAIN"]
 
     def __init__(self, log_func, config):
         self.log = log_func
@@ -47,18 +53,21 @@ class PysievedPlugin:
 
         """
 
-        if mechanism.upper() != 'PLAIN':
-            return {'result': 'NO', 'msg': 'Unsupported authentication mechanism'}
+        if mechanism.upper() != "PLAIN":
+            return {"result": "NO", "msg": "Unsupported authentication mechanism"}
+
         if len(args) != 1:
-            return {'result': 'NO', 'msg': 'Must provide authentication credentials'}
+            return {"result": "NO", "msg": "Must provide authentication credentials"}
 
-        _, user, passwd = args[0].decode('base64').split('\0', 2)
-        params = {'username': user, 'password': passwd}
+        authentication = args[0]
+        decoded = base64.b64decode(authentication)
+        _, username, password = decoded.decode().split("\0", 2)
+
+        params = {"username": username, "password": password}
         if self.auth(params):
-            return {'result': 'OK', 'username': user}
+            return {"result": "OK", "username": username}
         else:
-            return {'result': 'NO', 'msg': 'Bad username or password'}
-
+            return {"result": "NO", "msg": "Bad username or password"}
 
     def do_sasl_next(self, b64_string):
         """Handle the continuation of the SASL dialog
@@ -72,7 +81,6 @@ class PysievedPlugin:
 
         raise NotImplementedError()
 
-
     def auth(self, params):
         """Authenticate a user.
 
@@ -83,7 +91,6 @@ class PysievedPlugin:
 
         raise NotImplementedError()
 
-
     def lookup(self, params):
         """Setuid and return home directory.
 
@@ -91,7 +98,6 @@ class PysievedPlugin:
         """
 
         raise NotImplementedError()
-
 
     def create_storage(self, params):
         """Return a storage object.
@@ -106,7 +112,7 @@ class ScriptStorage:
     def __setitem__(self, k, v):
         if False:
             # If it doesn't validate, return ValueError
-            raise ValueError('explanation')
+            raise ValueError("explanation")
         raise NotImplementedError()
 
     def __getitem__(self, k):
@@ -114,7 +120,7 @@ class ScriptStorage:
 
     def __delitem__(self, k):
         if self.is_active(k):
-            raise ValueError('Script is active')
+            raise ValueError("Script is active")
         raise NotImplementedError()
 
     def __iter__(self):
@@ -127,9 +133,10 @@ class ScriptStorage:
         raise NotImplementedError()
 
     def set_active(self, k):
-        if k != None and not self.has_key(k):
-            raise KeyError('Unknown script')
+        if k is not None and not self.has_key(k):
+            raise KeyError("Unknown script")
         raise NotImplementedError()
+
 
 class TestConfig:
     def __init__(self, **kwargs):
@@ -144,11 +151,11 @@ class TestConfig:
                 return True
             else:
                 return False
-        except:
+        except Exception:
             return default
 
     def getint(self, sect, key, default):
         try:
             return int(self.dict[key])
-        except:
+        except Exception:
             return default
