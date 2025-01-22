@@ -17,14 +17,18 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
+#
+# 22 January 2025 - Modified by F. Ioannidis.
+
 
 import os
 import sys
 
+
 def daemon(pidfile=None, stdout=None, stderr=None):
     # Do this first so errors print out right away
     if pidfile:
-        f = file(pidfile, 'w')
+        f = open(pidfile, "w")
     else:
         f = None
 
@@ -55,4 +59,3 @@ def daemon(pidfile=None, stdout=None, stderr=None):
     if f:
         f.write(str(os.getpid()))
         f.close()
-
