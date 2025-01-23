@@ -17,30 +17,33 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
+#
+# 22 January 2025 - Modified by F. Ioannidis.
 
-import __init__
-import urllib
-import tempfile
-import stat
+
 import os
+import tempfile
+import urllib.parse
 
-
-
-
+import plugins
 
 ####################################
 ## Storage stuff
 
 
 def quote(str):
-    return urllib.quote(str, '')
+    return urllib.parse.quote(str, "")
+
 
 def unquote(str):
-    return urllib.unquote(str)
+    return urllib.parse.unquote(str)
 
 
 def write_out(sieve_has_error, basedir, final, txt):
     script = TempFile(basedir)
+
+    if isinstance(txt, str):
+        txt = txt.encode()
 
     script.write(txt)
     script.close()
@@ -57,7 +60,7 @@ class TempFile:
 
     def __init__(self, dir):
         fd, self.name = tempfile.mkstemp(dir=dir)
-        self.file = os.fdopen(fd, 'w+b')
+        self.file = os.fdopen(fd, "w+b")
         self.unlink = os.unlink
 
     def __getattr__(self, name):
@@ -77,7 +80,7 @@ class TempFile:
             pass
 
 
-class FileStorage(__init__.ScriptStorage):
+class FileStorage(plugins.ScriptStorage):
     def __init__(self, sieve_test, mydir, active_file, homedir):
         self.sieve_test = sieve_test
         self.mydir = mydir
@@ -92,70 +95,65 @@ class FileStorage(__init__.ScriptStorage):
 
         # If they already have a script, shuffle it into where we want it
         if os.path.exists(self.active) and not os.path.islink(self.active):
-            os.rename(self.active, os.path.join(self.basedir, 'dovecot'))
-            self.set_active('dovecot')
-
+            os.rename(self.active, os.path.join(self.basedir, "dovecot"))
+            self.set_active("dovecot")
 
     def __setitem__(self, k, v):
-        write_out(self.sieve_test,
-                  self.basedir,
-                  os.path.join(self.basedir, quote(k)),
-                  v)
-
+        write_out(
+            self.sieve_test,
+            self.basedir,
+            os.path.join(self.basedir, quote(k)),
+            v,
+        )
 
     def __getitem__(self, k):
         fn = os.path.join(self.basedir, quote(k))
         try:
-            return file(fn).read()
-        except IOError:
-            raise KeyError('Unknown script')
+            with open(fn) as file:
+                text = file.read()
 
+            return text.encode()
+        except IOError:
+            raise KeyError("Unknown script")
 
     def __delitem__(self, k):
         if k and self.is_active(k):
-            raise ValueError('Script is active')
+            raise ValueError("Script is active")
         fn = os.path.join(self.basedir, quote(k))
         try:
             os.unlink(fn)
         except OSError:
-            raise KeyError('Unknown script')
-
+            raise KeyError("Unknown script")
 
     def __iter__(self):
         for s in os.listdir(self.basedir):
-            if s[0] == '.':
+            if s[0] == ".":
                 continue
-            if s[-1] == '~':
+            if s[-1] == "~":
                 continue
             yield unquote(s)
-
 
     def has_key(self, k):
         fn = os.path.join(self.basedir, quote(k))
         return os.path.exists(fn)
 
-
     def is_active(self, k):
         fn = os.path.join(self.basedir, quote(k))
         if not self.has_key(k):
-            raise KeyError('Unknown script %s' % k)
+            raise KeyError("Unknown script %s" % k)
         try:
             return os.path.samefile(fn, self.active)
         except OSError:
             return False
 
-
     def set_active(self, k):
         if k:
             fn = os.path.join(self.mydir, quote(k))
             if not self.has_key(k):
-                raise KeyError('Unknown script')
+                raise KeyError("Unknown script")
         try:
             os.unlink(self.active)
         except OSError:
             pass
         if k:
             os.symlink(fn, self.active)
-
-
-

@@ -17,25 +17,31 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
+#
+# 22 January 2025 - Modified by F. Ioannidis.
 
-import __init__
+
 from crypt import crypt
 
-class PysievedPlugin(__init__.PysievedPlugin):
+import plugins
+
+
+class PysievedPlugin(plugins.PysievedPlugin):
     def init(self, config):
-        self.passfile = config.get('htpasswd', 'passwdfile',
-                                   '/etc/exim/virtual/passwd')
+        self.passfile = config.get("htpasswd", "passwdfile", "/etc/exim/virtual/passwd")
+
+        with open(self.passfile) as file:
+            lines = file.readlines()
 
         self.passwd = {}
-        for l in file(self.passfile):
-            parts = l.rstrip().split(':', 1)
+        for line in lines:
+            parts = line.rstrip().split(":", 1)
             self.passwd[parts[0]] = parts[1]
 
     def auth(self, params):
         try:
-            cpass = self.passwd[params['username']]
+            cpass = self.passwd[params["username"]]
         except KeyError:
             return False
 
-        return cpass == crypt(params['password'], cpass[:2])
-
+        return cpass == crypt(params["password"], cpass[:2])

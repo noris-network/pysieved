@@ -1,0 +1,21 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [Unreleased]
+
+### Changed
+
+#### 2025-01-22
+
+- Upgraded project to work with python 3.11 for **some** plugins.
+- `./config.py`: Updated exception handling to avoid using bare excepts.
+- `./daemon.py`: Converted `file` to `open`, as it works in Python 3.
+- `./managesieve.py`: Fixed some formatting, changed server `read` and `write` handlers to work with strings and bytes correctly.
+- `./pysieved.py`: Fixed imports and removed 2 semicolons.
+- `./plugins/__init__.py`: Updated `base64` decoding in authentication for Python 3. Some formatting changes.
+- `./plugins/exim.py`: Updated subprocess procedure to work for Python 3, updated imports, used context manager for file handling, updated EximStorage to allow `bytes` as values.
+- `./plugins/FileStorage.py`: Updated imports, urllib `quote` and `unquote` methods, allowed writing `str` types in `write_out`, used context manager for file handling.
+- `./plugins/htpasswd.py`: Used context manager for reading file with credentials. Some formatting changes.
+- `./plugins/virtual.py`: Updated imports and made some formatting changes
+
