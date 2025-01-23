@@ -3,7 +3,7 @@
 import os
 import re
 
-import plugins
+from pysieved import plugins
 
 path_re = re.compile(r"%((\d+)(\.\d+)?)?([ud%])")
 

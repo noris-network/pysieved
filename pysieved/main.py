@@ -18,7 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 22 January 2025 - Modified by F. Ioannidis.
+# 23 January 2025 - Modified by F. Ioannidis.
 
 
 import optparse
@@ -28,8 +28,8 @@ import socketserver as SocketServer
 import sys
 import syslog
 
-from config import Config
-from managesieve import RequestHandler
+from pysieved.config import Config
+from pysieved.managesieve import RequestHandler
 
 try:
     from tlslite.api import *

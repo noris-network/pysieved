@@ -19,3 +19,26 @@ All notable changes to this project will be documented in this file.
 - `./plugins/htpasswd.py`: Used context manager for reading file with credentials. Some formatting changes.
 - `./plugins/virtual.py`: Updated imports and made some formatting changes
 
+#### 2025-01-23
+
+- Moved all source filed and plugins into a python package:
+    - `./managesieve.py` -> `./pysieved/managesieve.py.py`
+    - `./pysieved.py` -> `./pysieved/main.py`
+    - `./daemon.py` -> `./pysieved/daemon.py`
+    - `./config.py` -> `./pysieved/config.py`
+    - `./plugins/virtual.py` -> `./pysieved/plugins/virtual.py`
+    - `./plugins/sasl.py` -> `./pysieved/plugins/sasl.py`
+    - `./plugins/passwd.py` -> `./pysieved/plugins/passwd.py`
+    - `./plugins/pam.py` -> `./pysieved/plugins/pam.py`
+    - `./plugins/mysql.py` -> `./pysieved/plugins/mysql.py`
+    - `./plugins/htpasswd.py` -> `./pysieved/plugins/htpasswd.py`
+    - `./plugins/FileStorage.py` -> `./pysieved/plugins/FileStorage.py`
+    - `./plugins/exim.py` -> `./pysieved/plugins/exim.py`
+    - `./plugins/dovecot.py` -> `./pysieved/plugins/dovecot.py`
+    - `./plugins/accept.py` -> `./pysieved/plugins/accept.py`
+    - `./plugins/__init__.py` -> `./pysieved/plugins/__init__.py`
+- Updated imports in the following files after converting to a Python package:
+    - `./pysieved/main.py`
+    - `./pysieved/plugins/virtual.py`
+    - `./pysieved/plugins/FileStorage.py`
+    - `./pysieved/plugins/exim.py`
