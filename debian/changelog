@@ -1,0 +1,12 @@
+pysieved (0.2.0) jammy; urgency=medium
+
+  * Added pysieved service
+  * Added command line options file for /etc/default/pysieved
+
+ -- Team noris SKG-PRJ <prj-d@noris.de>  Fri, 24 JAN 2025 12:14:16 +0300
+
+pysieved (0.1.0) jammy; urgency=medium
+
+  * Initial release
+
+ -- Team noris SKG-PRJ <prj-d@noris.de>  Fri, 22 JAN 2025 07:10:00 +0300

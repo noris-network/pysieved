@@ -1,0 +1,15 @@
+[Unit]
+Description=Sieve filtering server
+After=network.target
+
+[Service]
+Type=forking
+PIDFile=/tmp/pysieved.pid
+User=root
+Group=root
+Restart=always
+EnvironmentFile=/etc/default/pysieved
+ExecStart=/usr/bin/pysieved $PYSIEVED_OPTS
+
+[Install]
+WantedBy=multi-user.target

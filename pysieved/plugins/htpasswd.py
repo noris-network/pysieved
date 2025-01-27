@@ -18,12 +18,12 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 22 January 2025 - Modified by F. Ioannidis.
+# 24 January 2025 - Modified by F. Ioannidis.
 
 
 from crypt import crypt
 
-import plugins
+from pysieved import plugins
 
 
 class PysievedPlugin(plugins.PysievedPlugin):
