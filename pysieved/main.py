@@ -18,7 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 22 January 2025 - Modified by F. Ioannidis.
+# 24 January 2025 - Modified by F. Ioannidis.
 
 
 import optparse
@@ -28,8 +28,8 @@ import socketserver as SocketServer
 import sys
 import syslog
 
-from config import Config
-from managesieve import RequestHandler
+from pysieved.config import Config
+from pysieved.managesieve import RequestHandler
 
 try:
     from tlslite.api import *
@@ -209,13 +209,13 @@ def main():
     ## Import plugins
     ##
     auth = __import__(
-        "plugins.%s" % config.get("main", "auth", "SASL").lower(), None, None, True
+        "pysieved.plugins.%s" % config.get("main", "auth", "SASL").lower(), None, None, True
     )
     userdb = __import__(
-        "plugins.%s" % config.get("main", "userdb", "passwd").lower(), None, None, True
+        "pysieved.plugins.%s" % config.get("main", "userdb", "passwd").lower(), None, None, True
     )
     storage = __import__(
-        "plugins.%s" % config.get("main", "storage", "Dovecot").lower(),
+        "pysieved.plugins.%s" % config.get("main", "storage", "Dovecot").lower(),
         None,
         None,
         True,
@@ -302,7 +302,7 @@ def main():
         sock = socket.fromfd(0, socket.AF_INET, socket.SOCK_STREAM)
         h = handler(sock, sock.getpeername(), None)
     else:
-        import daemon
+        from pysieved import daemon
 
         s = Server((addr, port), handler)
 

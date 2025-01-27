@@ -18,14 +18,14 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 22 January 2025 - Modified by F. Ioannidis.
+# 23 January 2025 - Modified by F. Ioannidis.
 
 
 import os
 import tempfile
 import urllib.parse
 
-import plugins
+from pysieved import plugins
 
 ####################################
 ## Storage stuff

@@ -1,6 +1,9 @@
 # Python
 *.py[cod]
 *.egg-info
+build
 .python-version
 pyrightconfig.json
 
+# Debian packages
+*.deb

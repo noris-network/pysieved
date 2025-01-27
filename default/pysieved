@@ -1,0 +1,1 @@
+PYSIEVED_OPTS='--config /etc/pysieved/pysieved.ini'

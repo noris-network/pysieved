@@ -18,15 +18,15 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 22 January 2025 - Modified by F. Ioannidis.
+# 23 January 2025 - Modified by F. Ioannidis.
 
 
 import os
 import re
 import subprocess
 
-import plugins
-from plugins import FileStorage
+from pysieved import plugins
+from pysieved.plugins import FileStorage
 
 
 class EximStorage(FileStorage.FileStorage):
