@@ -54,3 +54,8 @@ All notable changes to this project will be documented in this file.
   * Fixed imports in `./pysieved/main.py`
   * Fixed imports in `./pysieved/plugins/htpasswd.py`
 * Updated `./.gitignore`, to ignore locally built debian packages
+
+#### 2025-02-19
+
+* Added `./.github/workflows/build-deb.yml` file to build and release debian package with Github Actions
+* Updated `./debian/build_deb.sh` script to automatically update the debian changelog  before building the debian package
