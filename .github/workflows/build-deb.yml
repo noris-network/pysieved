@@ -1,0 +1,45 @@
+name: Build and Release .deb Package
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Trigger only on tags matching this pattern
+
+jobs:
+  build-deb:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Compute the version by using github.ref_name (e.g., "v0.2.1")
+      - name: Compute Version
+        id: version
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          # Remove the leading "v" from the ref name (e.g., v0.2.1 becomes 0.2.1)
+          VERSION=${REF_NAME#v}
+          echo "Computed version: $VERSION"
+          echo "build_version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build .deb package
+        env:
+          BUILD_VERSION: ${{ steps.version.outputs.build_version }}
+        run: |
+          echo "Using BUILD_VERSION: $BUILD_VERSION"
+          chmod +x build_deb.sh
+          ./build_deb.sh
+
+      - name: Upload .deb to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: pysieved_${{ steps.version.outputs.build_version }}.deb
+          name: Pysieved ${{ github.ref_name }}
