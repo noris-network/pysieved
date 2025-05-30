@@ -59,3 +59,7 @@ All notable changes to this project will be documented in this file.
 
 * Added `./.github/workflows/build-deb.yml` file to build and release debian package with Github Actions
 * Updated `./debian/build_deb.sh` script to automatically update the debian changelog  before building the debian package
+
+#### 2025-05-30
+
+* `./pysieved/main.py`: Enabled listening to IPv6 addresses in `class Server(SocketServer.ForkingTCPServer)`.
