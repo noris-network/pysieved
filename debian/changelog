@@ -1,3 +1,9 @@
+pysieved (0.2.1) jammy; urgency=medium
+
+  * Enabled listening on IPv6
+
+ -- Team noris SKG-PRJ <prj-d@noris.de>  Fri, 30 MAY 2025 16:10:32 +0300
+
 pysieved (0.2.0) jammy; urgency=medium
 
   * Added pysieved service

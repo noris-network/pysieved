@@ -18,7 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 24 January 2025 - Modified by F. Ioannidis.
+# 30 May 2025 - Modified by F. Ioannidis.
 
 
 import optparse
@@ -41,6 +41,7 @@ except Exception:
 
 class Server(SocketServer.ForkingTCPServer):
     allow_reuse_address = True
+    address_family = socket.AF_INET6
 
 
 def main():
