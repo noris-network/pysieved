@@ -63,3 +63,7 @@ All notable changes to this project will be documented in this file.
 #### 2025-05-30
 
 * `./pysieved/main.py`: Enabled listening to IPv6 addresses in `class Server(SocketServer.ForkingTCPServer)`.
+
+#### 2025-07-14
+
+* `./pysieved/plugins/htpasswd.py`: Used entire `cpass` value as a salt instead of only the first 2 characters.

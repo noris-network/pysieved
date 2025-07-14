@@ -1,3 +1,9 @@
+pysieved (0.2.2) jammy; urgency=medium
+
+  * Updated salt for htpasswd authentication
+
+ -- Team noris SKG-PRJ <prj-d@noris.de>  Fri, 14 JUL 2025 15:41:32 +0300
+
 pysieved (0.2.1) jammy; urgency=medium
 
   * Enabled listening on IPv6
