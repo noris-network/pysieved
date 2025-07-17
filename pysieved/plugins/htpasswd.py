@@ -18,7 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 24 January 2025 - Modified by F. Ioannidis.
+# 14 July 2025 - Modified by F. Ioannidis.
 
 
 from crypt import crypt
@@ -44,4 +44,4 @@ class PysievedPlugin(plugins.PysievedPlugin):
         except KeyError:
             return False
 
-        return cpass == crypt(params["password"], cpass[:2])
+        return cpass == crypt(params["password"], cpass)
