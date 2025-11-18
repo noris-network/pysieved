@@ -1,18 +1,13 @@
-FROM python:3.11
+FROM debian:bookworm
 
 RUN apt-get update && \
   apt-get install --no-install-recommends -y \
-    python3 \
-    python3-dev \
-    python3-venv \
-    python3-pip \
     build-essential \
-    python3-setuptools \
-    debhelper \
     devscripts \
-    fakeroot \
+    python3-all \
+    python3-setuptools \
+    debhelper-compat \
     dh-python \
-    dh-virtualenv \
     dh-exec && \
   rm -rf /var/lib/apt/lists/*
 

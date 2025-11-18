@@ -6,6 +6,20 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+#### 2025-11-18
+
+* Updated debian packaging to install the systemd service and configured to use python3.
+* Removed `./debian/pysieved.links` because it was unnecessary.
+* Removed `./debian/install` that used to place the default options file into `/etc/default/`.
+* Added `./debian/pysieved.default` which automatically creates the defaults file in `/etc/default`.
+* Released new verion `v0.2.3` and updated `./debian/changelog`.
+* Removed `./debian/compat` and pinned `debhelper-compat`'s version in `./debian/control:Build-Depends`.
+* Updated `./debian/rules` to use `pybuild` to install the package.
+* Updated `./debian/control` to require Python 3.11, upgraded the standards version, and updated the `debhelper-compat` package to 13.
+* Fixed print statement in `./pysieved/plugins/sasl.py` that was using Python 2.7 syntax.
+* Fixed print statements in `./pysieved/plugins/pam.py` that were using Python 2.7 syntax.
+
+
 #### 2025-01-22
 
 * Upgraded project to work with python 3.11 for **some** plugins.
