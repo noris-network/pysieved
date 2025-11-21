@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 #### 2025-11-21
 
+* Prevented duplicate headers from being added to Sieve filters in `./pysieved/plugins/exim.py`.
+* Normalized line endings in Sieve filters to `LF`, replacing `CRLF` or `mixed` line endings in `./pysieved/plugins/exim.py`.
 * Updated `./pysieved/plugins/exim.py` to accept a filter `name` as a `str` and the `content` as `bytes`.
 * Updated the **PUTSCRIPT** command in `./pysieved/managesieve.py` to pass `bytes` in the Exim FileStorage.
 * Updated the **GETSCRIPT** command in `./pysieved/managesieve.py` to remove any unwanted characters from the response message.
