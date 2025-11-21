@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+#### 2025-11-21
+
+* Updated `./pysieved/plugins/exim.py` to accept a filter `name` as a `str` and the `content` as `bytes`.
+* Updated the **PUTSCRIPT** command in `./pysieved/managesieve.py` to pass `bytes` in the Exim FileStorage.
+* Updated the **GETSCRIPT** command in `./pysieved/managesieve.py` to remove any unwanted characters from the response message.
+
 #### 2025-11-18
 
 * Updated debian packaging to install the systemd service and configured to use python3.
@@ -18,7 +24,6 @@ All notable changes to this project will be documented in this file.
 * Updated `./debian/control` to require Python 3.11, upgraded the standards version, and updated the `debhelper-compat` package to 13.
 * Fixed print statement in `./pysieved/plugins/sasl.py` that was using Python 2.7 syntax.
 * Fixed print statements in `./pysieved/plugins/pam.py` that were using Python 2.7 syntax.
-
 
 #### 2025-01-22
 
