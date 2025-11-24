@@ -2,18 +2,16 @@ Source: pysieved
 Section: noris-extern
 Priority: optional
 Maintainer: Team noris SKG-PRJ <prj-d@noris.de>
-Build-Depends: debhelper (>= 9),
-    build-essential,
-    devscripts,
-    dh-virtualenv,
-    fakeroot,
-    python3,
-    python3-venv,
-Standards-Version: 3.9.5
+Build-Depends:
+  debhelper-compat (= 13),
+  dh-python,
+  python3-all,
+  python3-setuptools
+Standards-Version: 4.6.1
 X-Python3-Version: >= 3.11
 
 Package: pysieved
 Architecture: any
 Pre-Depends: dpkg (>= 1.16.1),  python3
-Depends: python3
+Depends: ${misc:Depends}, ${python3:Depends}
 Description: Sieve filtering service

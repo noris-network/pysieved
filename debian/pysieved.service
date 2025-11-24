@@ -10,6 +10,8 @@ Group=root
 Restart=always
 EnvironmentFile=/etc/default/pysieved
 ExecStart=/usr/bin/pysieved $PYSIEVED_OPTS
+Restart=on-failure
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target

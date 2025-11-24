@@ -1,3 +1,9 @@
+pysieved (0.2.3) jammy; urgency=medium
+
+  * Fixed debian packaging using pybuild
+
+ -- Team noris SKG-PRJ <prj-d@noris.de>  Mon, 18 NOV 2025 09:01:18 +0300
+
 pysieved (0.2.2) jammy; urgency=medium
 
   * Updated salt for htpasswd authentication

@@ -18,7 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 22 January 2025 - Modified by F. Ioannidis.
+# 21 November 2025 - Modified by F. Ioannidis.
 
 
 import socketserver as SocketServer
@@ -381,16 +381,13 @@ class RequestHandler(SocketServer.BaseRequestHandler):
         else:
             return self.no(code="QUOTA", reason="Quota exceeded")
 
-    def do_putscript(self, name, content):
+    def do_putscript(self, name: str, content: str):
         "2.6.  PUTSCRIPT Command"
 
         self.check_auth()
 
         try:
-            if isinstance(content, str):
-                content = content.encode()
-
-            self.storage[name] = content
+            self.storage[name] = content.encode()
         except ValueError as reason:
             return self.no(reason=reason)
 
@@ -426,16 +423,20 @@ class RequestHandler(SocketServer.BaseRequestHandler):
         "2.9.  GETSCRIPT Command"
 
         self.check_auth()
+
         try:
             s = self.storage[name]
         except KeyError:
             return self.no(reason="No script by that name")
+
         line = "{%d}\r\n" % len(s)
         self.log(3, "S: %r" % line)
         self.write(line)
-        line = "%s\r\n" % s
+
+        line = "%s\r\n" % s.decode("utf-8")
         self.log(3, "S: %r" % line)
-        self.write(line)
+        self.write(line.replace("b'", "").replace("'", ""))
+
         return self.ok()
 
     def do_deletescript(self, name):

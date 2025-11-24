@@ -18,7 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 23 January 2025 - Modified by F. Ioannidis.
+# 21 November 2025 - Modified by A. Manalikadis.
 
 
 import os
@@ -57,12 +57,18 @@ class EximStorage(FileStorage.FileStorage):
             except IOError:
                 pass
 
-    def __setitem__(self, k, v):
-        if isinstance(v, bytes):
-            v = v.decode()
+    def __setitem__(self, name: str, content: bytes):
+        # Normalize all line endings to LF first
+        filter_ = content.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
 
-        v = self.sieve_hdr + "\r\n" + v
-        FileStorage.FileStorage.__setitem__(self, k, v)
+        # Prepare header with LF
+        header = f"{self.sieve_hdr}\n".encode()
+
+        # Add header only if it is not already there
+        if not filter_.startswith(header):
+            filter_ = header + filter_
+
+        super().__setitem__(name, filter_)
 
 
 class PysievedPlugin(plugins.PysievedPlugin):

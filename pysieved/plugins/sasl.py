@@ -17,6 +17,8 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
+#
+# 18 November 2025 - Modified by F. Ioannidis.
 
 import __init__
 import socket
@@ -59,5 +61,5 @@ if __name__ == '__main__':
             return default
 
     n = new(C())
-    print n.auth({'username': sys.argv[1],
-                  'password': sys.argv[2]})
+    print(n.auth({'username': sys.argv[1],
+                  'password': sys.argv[2]}))
