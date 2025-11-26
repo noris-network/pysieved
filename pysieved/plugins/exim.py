@@ -18,7 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 21 November 2025 - Modified by A. Manalikadis.
+# 26 November 2025 - Modified by F. Ioannidis.
 
 
 import os
@@ -67,6 +67,8 @@ class EximStorage(FileStorage.FileStorage):
         # Add header only if it is not already there
         if not filter_.startswith(header):
             filter_ = header + filter_
+
+        filter_ = filter_.strip(b"\n") + b"\n"
 
         super().__setitem__(name, filter_)
 

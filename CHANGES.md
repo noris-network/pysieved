@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+#### 2025-11-26
+
+* `./pysieved/managesieve.py`: Fixed the `readline` and `bread` to read bytes from the socket, and fixed GETSCRIPT to return bytes. Also made some small refactoring changes.
+* `./pysieved/plugins/FileStorage.py`: Updated the file reading function to open files in `rb` mode and return the bytes.
+* `./pysieved/plugins/exim.py`: Updated the `__setitem__` method to remove trailing and starting `\n` characters from the filter.
+
+
 #### 2025-11-21
 
 * Prevented duplicate headers from being added to Sieve filters in `./pysieved/plugins/exim.py`.
