@@ -18,7 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 26 November 2025 - Modified by F. Ioannidis.
+# 27 November 2025 - Modified by A. Manalikadis.
 
 
 import os
@@ -65,7 +65,7 @@ class EximStorage(FileStorage.FileStorage):
         header = f"{self.sieve_hdr}\n".encode()
 
         # Add header only if it is not already there
-        if not filter_.startswith(header):
+        if not re.match(self.sieve_re, filter_.decode()):
             filter_ = header + filter_
 
         filter_ = filter_.strip(b"\n") + b"\n"

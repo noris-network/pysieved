@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+#### 2025-11-27
+
+* `./pysieved/plugins/exim.py`: Replaced check for existing Sieve filter header with a regex.
+
 #### 2025-11-26
 
 * `./pysieved/managesieve.py`: Fixed the `readline` and `bread` to read bytes from the socket, and fixed GETSCRIPT to return bytes. Also made some small refactoring changes.

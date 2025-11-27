@@ -1,5 +1,11 @@
 pysieved (0.2.4) jammy; urgency=medium
 
+  * Replaced check for existing Sieve filter header with a regex
+
+ -- Team noris SKG-PRJ <prj-d@noris.de>  Thu, 27 NOV 2025 09:00:00 +0300
+
+pysieved (0.2.4) jammy; urgency=medium
+
   * Fixed PUTSCRIPT and GETSCRIPT to read and write bytes, as to support UTF-8 characters
   * Changed FileStorage to read bytes
   * Fixed the Exim FileStorage plugin to clean LF characters from the filter
