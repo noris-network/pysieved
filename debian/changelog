@@ -1,3 +1,11 @@
+pysieved (0.2.4) jammy; urgency=medium
+
+  * Fixed PUTSCRIPT and GETSCRIPT to read and write bytes, as to support UTF-8 characters
+  * Changed FileStorage to read bytes
+  * Fixed the Exim FileStorage plugin to clean LF characters from the filter
+
+ -- Team noris SKG-PRJ <prj-d@noris.de>  Mon, 26 NOV 2025 14:07:52 +0300
+
 pysieved (0.2.3) jammy; urgency=medium
 
   * Fixed debian packaging using pybuild

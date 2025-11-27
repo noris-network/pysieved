@@ -18,7 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 23 January 2025 - Modified by F. Ioannidis.
+# 26 November 2025 - Modified by F. Ioannidis.
 
 
 import os
@@ -108,11 +108,12 @@ class FileStorage(plugins.ScriptStorage):
 
     def __getitem__(self, k):
         fn = os.path.join(self.basedir, quote(k))
+
         try:
-            with open(fn) as file:
+            with open(fn, "rb") as file:
                 text = file.read()
 
-            return text.encode()
+            return text
         except IOError:
             raise KeyError("Unknown script")
 

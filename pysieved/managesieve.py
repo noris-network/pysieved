@@ -18,12 +18,13 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 21 November 2025 - Modified by F. Ioannidis.
+# 26 November 2025 - Modified by F. Ioannidis.
 
 
 import socketserver as SocketServer
 import sys
 import time
+from typing import cast
 
 try:
     from tlslite.api import *
@@ -78,10 +79,11 @@ class RequestHandler(SocketServer.BaseRequestHandler):
         self.storage = None
         self.tls = None
         self.tls_params = self.get_tls_params()
-        SocketServer.BaseRequestHandler.__init__(self, request, client_address, server)
 
-    def log(self, l, s):
-        print(time.time(), "=" * l, s)
+        super().__init__(request, client_address, server)
+
+    def log(self, level: int, message: str):
+        print(time.time(), "=" * level, message)
 
     def send(self, *args):
         out = []
@@ -123,38 +125,53 @@ class RequestHandler(SocketServer.BaseRequestHandler):
     def bye(self, code=None, reason=None):
         self._rsp("BYE", code, reason)
 
-    def bread(self, n):
-        out = self.buf
-        while len(out) < n:
-            r = self.read(n - len(out))
+    def bread(self, n) -> bytes:
+        buffer = self.buf
+
+        buffer = cast(bytes, buffer)
+
+        while len(buffer) < n:
+            r = self.request.recv(n - len(buffer))
+
             if not r:
                 raise Hangup()
-            out += r
-        self.buf = out[n:]
 
-        s = out[:n]
+            buffer += r
+
+        self.buf = buffer[n:]
+        s = buffer[:n]
+
         self.log(3, "C: %r" % s)
+
         return s
 
-    def readline(self):
+    def readline(self) -> str:
         out = self.buf
+
+        out = cast(bytes, out)
+
         while True:
-            pos = out.find("\r\n")
+            pos = out.find(b"\r\n")
             if pos > -1:
                 self.buf = out[pos + 2 :]
                 s = out[:pos]
-                self.log(3, "C: %r" % (s + "\r\n"))
-                return s
-            r = self.read(1024)
+                self.log(3, "C: %r" % (s + b"\r\n"))
+
+                return s.decode()
+
+            r = self.request.recv(1024)
+
             if not r:
                 raise Hangup()
+
             out += r
 
     def handle(self):
-        def _write(string: str):
-            message = string
-            if isinstance(string, str):
-                message = string.encode()
+        def _write(content: str | bytes):
+            message = content
+
+            if isinstance(content, str):
+                message = content.encode()
 
             return self.request.send(message)
 
@@ -162,18 +179,20 @@ class RequestHandler(SocketServer.BaseRequestHandler):
             """Read `n` bytes from socket and convert to string."""
 
             received = self.request.recv(n)
+
             if isinstance(received, bytes):
                 received = received.decode()
 
             return received
 
-        self.buf = ""
+        self.buf = b""
         self.write = _write
         self.read = _read
 
         self.log(1, "Connect from %r" % (self.client_address,))
 
         self.do_capability()
+
         try:
             while True:
                 try:
@@ -202,7 +221,7 @@ class RequestHandler(SocketServer.BaseRequestHandler):
         except Hangup:
             pass
         except:
-            nil, t, v, tbinfo = compact_traceback()
+            _, t, v, tbinfo = compact_traceback()
             self.log(-1, "[ERROR] %s:%s %s" % (t, v, tbinfo))
             self.bye(reason="Server error")
             raise
@@ -243,7 +262,8 @@ class RequestHandler(SocketServer.BaseRequestHandler):
                     n = int(o[1:-2])
                 except ValueError:
                     continue
-                oparts[-1] = self.bread(n)
+
+                oparts[-1] = self.bread(n).decode()
             else:
                 break
 
@@ -359,27 +379,33 @@ class RequestHandler(SocketServer.BaseRequestHandler):
         "2.4.  CAPABILITY Command"
 
         self.send("IMPLEMENTATION", version)
+
         if self.tls or not self.tls_params["required"]:
             self.send("SASL", " ".join(self.list_mech()))
         else:
             self.send("SASL")
+
         self.send("SIEVE", self.capabilities)
+
         if self.tls_params["key"] and self.tls_params["cert"] and not self.tls:
             self.send("STARTTLS")
+
         self.ok()
 
     def do_havespace(self, name, size):
         "2.5.  HAVESPACE Command"
 
         self.check_auth()
+
         try:
-            s = int(size)
+            required_space = int(size)
         except ValueError:
             return self.no(reason="Not a number")
-        if int(size) < maxsize:
+
+        if required_space < maxsize:
             return self.ok()
-        else:
-            return self.no(code="QUOTA", reason="Quota exceeded")
+
+        return self.no(code="QUOTA", reason="Quota exceeded")
 
     def do_putscript(self, name: str, content: str):
         "2.6.  PUTSCRIPT Command"
@@ -417,25 +443,26 @@ class RequestHandler(SocketServer.BaseRequestHandler):
             return self.no(reason="No script by that name")
         except Exception:
             return self.no()
+
         return self.ok()
 
-    def do_getscript(self, name):
+    def do_getscript(self, name: str):
         "2.9.  GETSCRIPT Command"
 
         self.check_auth()
 
         try:
-            s = self.storage[name]
+            content: bytes = self.storage[name]
         except KeyError:
             return self.no(reason="No script by that name")
 
-        line = "{%d}\r\n" % len(s)
-        self.log(3, "S: %r" % line)
+        line = "{%d}\r\n" % len(content)
+        self.log(3, "C: %r" % line)
         self.write(line)
 
-        line = "%s\r\n" % s.decode("utf-8")
+        line = content + b"\r\n"
         self.log(3, "S: %r" % line)
-        self.write(line.replace("b'", "").replace("'", ""))
+        self.write(line)
 
         return self.ok()
 
