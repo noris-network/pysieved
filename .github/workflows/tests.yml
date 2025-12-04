@@ -17,8 +17,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install application requirements
         run: |
-          apt update --yes
-          apt install exim4 --yes
+          sudo apt update --yes
+          sudo apt install exim4 --yes
       - name: Install test tools
         run: pip install pytest==9.0.1 pytest-cov==7.0.0
       - name: Install project
