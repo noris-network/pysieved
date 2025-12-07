@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+#### 2025-12-05
+
+* `./pysieved/main.py`: Added file-based logging with `WatchedFileHandler` and removed syslog usage.
+* `./pysieved.ini`: Added option for file logging path.
+
 #### 2025-12-04
 
 * `./.github/workflows/tests.yml`: Added Github action for running tests.
