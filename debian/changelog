@@ -1,3 +1,10 @@
+pysieved (0.2.5) jammy; urgency=medium
+
+  * Added tests
+  * Refactored entrypoint to separate server/handler logic and parser logic
+
+ -- Team noris SKG-PRJ <prj-d@noris.de>  Mon, 04 DEC 2025 12:00:12 +0200
+
 pysieved (0.2.4) jammy; urgency=medium
 
   * Fixed PUTSCRIPT and GETSCRIPT to read and write bytes, as to support UTF-8 characters

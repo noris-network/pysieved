@@ -18,7 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 30 May 2025 - Modified by F. Ioannidis.
+# 04 December 2025 - Modified by F. Ioannidis.
 
 
 import optparse
@@ -44,7 +44,28 @@ class Server(SocketServer.ForkingTCPServer):
     address_family = socket.AF_INET6
 
 
-def main():
+# Define defaults before they get overwritten
+VERBOSITY = 10
+DEBUG = False
+
+
+def log(l, s):
+    if l <= VERBOSITY:
+        if DEBUG:
+            sys.stderr.write("%s %s\n" % ("=" * l, s))
+        else:
+            if l > 0:
+                lvl = syslog.LOG_NOTICE
+            elif l == 0:
+                lvl = syslog.LOG_WARNING
+            else:
+                lvl = syslog.LOG_ERR
+            syslog.syslog(lvl, s)
+
+
+def cli():
+    global VERBOSITY, DEBUG
+
     parser = optparse.OptionParser()
     parser.add_option(
         "-i",
@@ -136,14 +157,16 @@ def main():
         dest="tls_cert",
         default="",
     )
-    (options, args) = parser.parse_args()
 
-    # Read config file
-    config = Config(options.config)
+    options, args = parser.parse_args()
 
-    port = options.port or config.getint("main", "port", 2000)
-    addr = options.bindaddr or config.get("main", "bindaddr", "")
-    pidfile = options.pidfile or config.get("main", "pidfile", "/var/run/pysieved.pid")
+    VERBOSITY = options.verbosity
+    DEBUG = options.debug
+
+    return options, args
+
+
+def get_handler(options, config):
     base = options.base or config.get("main", "base", "")
     tls_required = options.tls_required or config.getboolean("TLS", "required", False)
     tls_key = options.tls_key or config.get("TLS", "key", "")
@@ -152,19 +175,6 @@ def main():
 
     # Define the log function
     syslog.openlog("pysieved[%d]" % (os.getpid()), 0, syslog.LOG_MAIL)
-
-    def log(l, s):
-        if l <= options.verbosity:
-            if options.debug:
-                sys.stderr.write("%s %s\n" % ("=" * l, s))
-            else:
-                if l > 0:
-                    lvl = syslog.LOG_NOTICE
-                elif l == 0:
-                    lvl = syslog.LOG_WARNING
-                else:
-                    lvl = syslog.LOG_ERR
-                syslog.syslog(lvl, s)
 
     # Load TLS key and cert
     tls_privateKey = None
@@ -210,10 +220,16 @@ def main():
     ## Import plugins
     ##
     auth = __import__(
-        "pysieved.plugins.%s" % config.get("main", "auth", "SASL").lower(), None, None, True
+        "pysieved.plugins.%s" % config.get("main", "auth", "SASL").lower(),
+        None,
+        None,
+        True,
     )
     userdb = __import__(
-        "pysieved.plugins.%s" % config.get("main", "userdb", "passwd").lower(), None, None, True
+        "pysieved.plugins.%s" % config.get("main", "userdb", "passwd").lower(),
+        None,
+        None,
+        True,
     )
     storage = __import__(
         "pysieved.plugins.%s" % config.get("main", "storage", "Dovecot").lower(),
@@ -242,7 +258,8 @@ def main():
 
         def __init__(self, *args):
             self.params = {}
-            RequestHandler.__init__(self, *args)
+
+            super().__init__(*args)
 
         def log(self, l, s):
             log(l, s)
@@ -299,6 +316,19 @@ def main():
                 "cert": tls_certChain,
             }
 
+    return handler
+
+
+def main(options: optparse.Values, _: list):
+    # Read config file
+    config = Config(options.config)
+
+    addr = options.bindaddr or config.get("main", "bindaddr", "")
+    port = options.port or config.getint("main", "port", 4190)
+    pidfile = options.pidfile or config.get("main", "pidfile", "/var/run/pysieved.pid")
+
+    handler = get_handler(options, config)
+
     if options.stdin:
         sock = socket.fromfd(0, socket.AF_INET, socket.SOCK_STREAM)
         h = handler(sock, sock.getpeername(), None)
@@ -309,9 +339,15 @@ def main():
 
         if not options.debug:
             daemon.daemon(pidfile=pidfile)
-        log(1, "Listening on %s port %d" % (addr or "INADDR_ANY", port))
+
+        log(1, f"Listening on {addr or 'INADDR_ANY'} port {port}")
         s.serve_forever()
 
 
+def entry():
+    options, args = cli()
+    main(options, args)
+
+
 if __name__ == "__main__":
-    main()
+    entry()

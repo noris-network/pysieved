@@ -7,3 +7,6 @@ pyrightconfig.json
 
 # Debian packages
 *.deb
+
+# Tests
+.coverage
