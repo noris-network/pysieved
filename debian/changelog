@@ -1,3 +1,9 @@
+pysieved (0.2.6) jammy; urgency=medium
+
+  * Replaced syslog with File Logging
+
+ -- Team noris SKG-PRJ <prj-d@noris.de>  Fri, 05 DEC 2025 17:00:00 +0200
+
 pysieved (0.2.5) jammy; urgency=medium
 
   * Added tests
