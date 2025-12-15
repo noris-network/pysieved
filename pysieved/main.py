@@ -18,7 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 04 December 2025 - Modified by F. Ioannidis.
+# 05 December 2025 - Modified by A. Manalikadis.
 
 
 import optparse
@@ -26,7 +26,10 @@ import os
 import socket
 import socketserver as SocketServer
 import sys
-import syslog
+import logging
+from logging.handlers import WatchedFileHandler
+import getpass
+
 
 from pysieved.config import Config
 from pysieved.managesieve import RequestHandler
@@ -47,20 +50,52 @@ class Server(SocketServer.ForkingTCPServer):
 # Define defaults before they get overwritten
 VERBOSITY = 10
 DEBUG = False
+LOGGER = logging.getLogger("pysieved")
 
-
-def log(l, s):
+def log(l: int, s: str) -> None:
     if l <= VERBOSITY:
-        if DEBUG:
-            sys.stderr.write("%s %s\n" % ("=" * l, s))
+        if l > 0:
+            lvl = logging.INFO
+        elif l == 0:
+            lvl = logging.WARNING
         else:
-            if l > 0:
-                lvl = syslog.LOG_NOTICE
-            elif l == 0:
-                lvl = syslog.LOG_WARNING
-            else:
-                lvl = syslog.LOG_ERR
-            syslog.syslog(lvl, s)
+            lvl = logging.ERROR
+
+        LOGGER.log(lvl, s)
+
+
+def setup_logging(options: optparse.Values, config: Config) -> None:
+    global VERBOSITY, DEBUG, LOGGER
+
+    VERBOSITY = options.verbosity
+    DEBUG = options.debug
+
+    # Default logfile, overrideable by config
+    logfile = config.get("main", "logfile", "/var/log/pysieved/pysieved.log")
+
+    # Base logger config
+    LOGGER.setLevel(logging.DEBUG)
+
+    # Remove any existing handlers (if intiliazed more than once in tests)
+    LOGGER.handlers.clear()
+
+    username = getpass.getuser()
+
+    formatter = logging.Formatter(
+        fmt=f"%(asctime)s {username} [%(process)d] %(levelname)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
+    if DEBUG:
+        # In debug mode, log to stderr
+        handler = logging.StreamHandler(sys.stderr)
+    else:
+        # In normal mode, log to a logfile that notices rotation by logrotate
+        handler = WatchedFileHandler(logfile)
+
+    handler.setFormatter(formatter)
+    LOGGER.addHandler(handler)
+
 
 
 def cli():
@@ -172,9 +207,6 @@ def get_handler(options, config):
     tls_key = options.tls_key or config.get("TLS", "key", "")
     tls_cert = options.tls_cert or config.get("TLS", "cert", "")
     tls_passphrase = config.get("TLS", "passphrase", "")
-
-    # Define the log function
-    syslog.openlog("pysieved[%d]" % (os.getpid()), 0, syslog.LOG_MAIL)
 
     # Load TLS key and cert
     tls_privateKey = None
@@ -322,6 +354,9 @@ def get_handler(options, config):
 def main(options: optparse.Values, _: list):
     # Read config file
     config = Config(options.config)
+
+    # Initialise logging
+    setup_logging(options, config)
 
     addr = options.bindaddr or config.get("main", "bindaddr", "")
     port = options.port or config.getint("main", "port", 4190)
