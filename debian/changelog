@@ -1,3 +1,9 @@
+pysieved (0.2.7) jammy; urgency=medium
+
+  * Added error handling for client disconnects during read/write.
+
+ -- Team noris SKG-PRJ <prj-d@noris.de>  Fri, 19 DEC 2025 18:00:00 +0200
+
 pysieved (0.2.6) jammy; urgency=medium
 
   * Replaced syslog with File Logging

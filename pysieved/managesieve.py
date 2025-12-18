@@ -18,9 +18,10 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 ## USA
 #
-# 26 November 2025 - Modified by F. Ioannidis.
+# 19 December 2025 - Modified by A. Manalikadis.
 
 
+import errno
 import socketserver as SocketServer
 import sys
 import time
@@ -168,22 +169,41 @@ class RequestHandler(SocketServer.BaseRequestHandler):
 
     def handle(self):
         def _write(content: str | bytes):
-            message = content
+            try:
+                message = content
 
-            if isinstance(content, str):
-                message = content.encode()
+                if isinstance(content, str):
+                    message = content.encode()
 
-            return self.request.send(message)
+                return self.request.send(message)
+
+            except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+                # Client closed early (common on LOGOUT / timeouts / reconnects)
+                raise Hangup()
+            except OSError as e:
+                if e.errno in (errno.EPIPE, errno.ECONNRESET, errno.ECONNABORTED, errno.ETIMEDOUT):
+                    raise Hangup()
+                raise
 
         def _read(n: int) -> str:
             """Read `n` bytes from socket and convert to string."""
+            try:
+                received = self.request.recv(n)
 
-            received = self.request.recv(n)
+                if not received:
+                    raise Hangup()
 
-            if isinstance(received, bytes):
-                received = received.decode()
+                if isinstance(received, bytes):
+                    received = received.decode()
 
-            return received
+                return received
+            except (ConnectionResetError, ConnectionAbortedError):
+                raise Hangup()
+            except OSError as e:
+                if e.errno in (errno.ECONNRESET, errno.ECONNABORTED, errno.ETIMEDOUT):
+                    raise Hangup()
+                raise
+
 
         self.buf = b""
         self.write = _write
@@ -191,9 +211,8 @@ class RequestHandler(SocketServer.BaseRequestHandler):
 
         self.log(1, "Connect from %r" % (self.client_address,))
 
-        self.do_capability()
-
         try:
+            self.do_capability()
             while True:
                 try:
                     cmd = self.get_command()
@@ -220,10 +239,13 @@ class RequestHandler(SocketServer.BaseRequestHandler):
 
         except Hangup:
             pass
-        except:
+        except Exception:
             _, t, v, tbinfo = compact_traceback()
             self.log(-1, "[ERROR] %s:%s %s" % (t, v, tbinfo))
-            self.bye(reason="Server error")
+            try:
+                self.bye(reason="Server error")
+            except Exception:
+                pass
             raise
 
     def finish(self):
