@@ -43,7 +43,13 @@ class AuthenticateTest(TestCase):
         self.password = "12345"
 
     def tearDown(self) -> None:
+        try:
+            self.client.logout()
+        finally:
+            self.client.close()
+
         self.server.shutdown()
+        self.server.server_close()
         self._t.join()
 
         super().tearDown()
@@ -110,7 +116,13 @@ class ManagesieveTest(TestCase):
         # if not removed:
         #     warnings.warn(f"Could not remove filter '{cls.filter_name}'.")
 
+        try:
+            cls.client.logout()
+        finally:
+            cls.client.close()
+
         cls.server.shutdown()
+        cls.server.server_close()
         cls._t.join()
 
         super().tearDownClass()

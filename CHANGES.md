@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+#### 2026-01-13
+
+* `./tests/base.py`: Added close method for `MockClient` to properly shutdown the client.
+* `./tests/test_managesieve.py`: Fixed `tearDown` methods to shutdown the client and the server properly.
+
 #### 2025-12-05
 
 * `./pysieved/main.py`: Added file-based logging with `WatchedFileHandler` and removed syslog usage.
