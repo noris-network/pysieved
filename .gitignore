@@ -10,3 +10,6 @@ pyrightconfig.json
 
 # Tests
 .coverage
+
+# Editor
+.vscode
